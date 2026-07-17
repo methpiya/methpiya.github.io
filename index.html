@@ -115,55 +115,112 @@
             background: #94a3b8; 
         }
 
-        /* Print Styles for A4 PDF Resume */
         @media print {
-            @page {
-                size: A4;
-                margin: 1cm;
-            }
-            body {
-                background: #ffffff !important;
-                color: #0f172a !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            /* 1. Standard Page Margins (Prevents Edge Bleeding on ALL Pages) */
+            @page { size: A4; margin: 12mm; }
+            
+            body { 
+                background: #ffffff !important; 
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+                color: #0f172a !important;
             }
-            .max-w-7xl {
-                max-width: 100% !important;
+            
+            /* 2. Global Container */
+            .max-w-7xl { 
+                max-width: 100% !important; 
+                width: 100% !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
             }
-            .glass-card, .bg-white\/80, .bg-white {
+            
+            /* Reduce main section gaps */
+            .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 10px !important; }
+
+            /* 3. Top Sections (Header, Skills, Charts) - Aggressive Shrink to fit Page 1 */
+            .glass-card {
+                box-shadow: none !important;
                 background: #ffffff !important;
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                box-shadow: none !important;
-                border: 1px solid #e2e8f0 !important;
-                border-radius: 8px !important;
-                padding: 20px !important;
-                margin-bottom: 20px !important;
-            }
-            .timeline-item, .glass-card, .chart-container, .bg-white\/80 {
-                page-break-inside: avoid !important;
+                border: 1px solid #cbd5e1 !important;
+                padding: 12px !important;
+                margin-bottom: 0 !important;
                 break-inside: avoid !important;
+                page-break-inside: avoid !important;
             }
-            .no-print {
-                display: none !important;
+            
+            /* Header Shrink */
+            header h1 { font-size: 18pt !important; line-height: 1.1 !important; margin-bottom: 5px !important; }
+            header .w-32 { width: 80px !important; height: 100px !important; border-width: 2px !important; }
+            header .gap-8 { gap: 10px !important; }
+            header .text-3xl { font-size: 16pt !important; }
+            header .px-8 { padding: 6px 12px !important; }
+            header .mb-5 { margin-bottom: 10px !important; }
+            
+            /* Skills & Education Inner Shrink (CRITICAL for Page 1 fit) */
+            .glass-card h2 { font-size: 14pt !important; margin-bottom: 10px !important; }
+            .glass-card .p-8 { padding: 12px !important; } /* Shrinks inner cards */
+            .glass-card .mb-8 { margin-bottom: 10px !important; }
+            .glass-card .mt-8 { margin-top: 10px !important; }
+            .glass-card .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 8px !important; }
+            .glass-card .p-5 { padding: 8px !important; }
+            .glass-card h3.text-2xl { font-size: 13pt !important; }
+            .glass-card .text-5xl { font-size: 20pt !important; }
+            
+            /* Grid & Charts */
+            .grid { gap: 10px !important; }
+            .grid-cols-1.lg\:grid-cols-2, .grid-cols-1.md\:grid-cols-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
             }
-            .mix-blend-multiply {
-                display: none !important;
+            .chart-container { 
+                height: 130px !important; 
+                display: flex !important; 
+                justify-content: center !important; 
+                align-items: center !important; 
+                overflow: hidden !important; 
             }
-            .grid-cols-1.md\:grid-cols-2 {
-                grid-template-columns: 1fr !important;
-                gap: 20px !important;
+            canvas { max-height: 130px !important; max-width: 100% !important; }
+
+            /* 4. Timeline Section (Forces to Page 2) */
+            .glass-card.mb-10 {
+                break-before: page !important; 
+                page-break-before: always !important; /* Forces Timeline strictly to Page 2 */
+                break-inside: auto !important;
+                page-break-inside: auto !important;
+                border: none !important;
+                padding: 10px 0 !important;
+                margin-top: 0 !important;
             }
-            .chart-container {
-                height: 250px !important;
+
+            /* Timeline Items Formatting (Pages 2 & 3) */
+            .timeline-item {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                /* CRITICAL: Padding doesn't collapse on new pages! Acts as safe top margin for Page 3+ */
+                padding-top: 20px !important; 
+                margin-bottom: 0 !important; 
             }
-            * {
-                box-shadow: none !important;
-                transition: none !important;
-                animation: none !important;
+            
+            .timeline-item .bg-white.p-6 {
+                padding: 12px 16px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 8px !important;
             }
+            
+            /* Timeline Typography */
+            .glass-card.mb-10 h2 { font-size: 15pt !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 5px !important; margin-bottom: 0 !important; }
+            .timeline-item h3 { font-size: 13pt !important; font-weight: 700 !important; margin-bottom: 2px !important; color: #0f172a !important; }
+            .timeline-item p.text-lg { font-size: 10pt !important; font-weight: 600 !important; margin-bottom: 4px !important; }
+            .timeline-item .text-sm { font-size: 9.5pt !important; line-height: 1.4 !important; }
+            
+            /* Remove space-y margins since padding-top handles the gaps now */
+            .space-y-14 > :not([hidden]) ~ :not([hidden]) { margin-top: 0 !important; }
+            .space-y-4 > :not([hidden]) ~ :not([hidden]), .space-y-3 > :not([hidden]) ~ :not([hidden]) { 
+                margin-top: 6px !important; 
+            }
+            
+            /* 5. Hide Web Elements */
+            .no-print, .mix-blend-multiply { display: none !important; }
         }
     </style>
 </head>
