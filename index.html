@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Experience Dashboard - Methpiya</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#ec4899',
+                        dark: '#0f172a',
+                        light: '#f8fafc',
+                        accent: '#0ea5e9'
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 20px rgba(99, 102, 241, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            /* Premium gradient mesh background */
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%);
+            background-attachment: fixed;
+            color: #334155;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: 4px solid #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:hover::before {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+        
+        mark {
+            background: linear-gradient(120deg, rgba(253, 224, 71, 0.6) 0%, rgba(253, 224, 71, 0.2) 100%);
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Print Styles for A4 PDF Resume */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .max-w-7xl {
+                max-width: 100% !important;
+            }
+            .glass-card, .bg-white\/80, .bg-white {
+                background: #ffffff !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 8px !important;
+                padding: 20px !important;
+                margin-bottom: 20px !important;
+            }
+            .timeline-item, .glass-card, .chart-container, .bg-white\/80 {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .mix-blend-multiply {
+                display: none !important;
+            }
+            .grid-cols-1.md\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            .chart-container {
+                height: 250px !important;
+            }
+            * {
+                box-shadow: none !important;
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased p-4 md:p-8 font-sans">
+
+    <!-- Floating Download Button -->
+    <button onclick="window.print()" class="no-print fixed bottom-6 right-6 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-300 transition-all hover:scale-105 flex items-center gap-2 group">
+        <i class="fa-solid fa-file-pdf text-xl"></i>
+        <span>ดาวน์โหลด Resume</span>
+    </button>
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header: Profile Summary Card -->
+        <header class="glass-card rounded-3xl p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+            <!-- Decorative blur blob -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 text-center md:text-left relative z-10">
+                <div class="w-32 h-40 md:w-36 md:h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 relative group">
+                    <img src="profile.jpg" alt="Profile Picture" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/40 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-dark mb-3 tracking-tight font-heading">นางสาวเมธปิยา เคนบุบผา</h1>
+                    <div class="mb-5">
+                        <span class="inline-flex items-center bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-5 py-2 rounded-full text-sm font-semibold border border-indigo-100/50 shadow-sm">
+                            <i class="fa-solid fa-graduation-cap mr-2 text-indigo-500"></i> ศศ.บ. ภาษาสเปน (โท ประชาสัมพันธ์) ม.ขอนแก่น
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-3 text-slate-600 font-medium text-sm md:text-base">
+                        <p class="flex items-center gap-2 hover:text-primary transition-colors cursor-default"><i class="fa-solid fa-phone text-emerald-500 bg-emerald-50 p-2 rounded-full"></i> 0936417989</p>
+                        <p class="flex items-center gap-2 hover:text-primary transition-colors cursor-default"><i class="fa-solid fa-envelope text-blue-500 bg-blue-50 p-2 rounded-full"></i> fabiolafilm@gmail.com</p>
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-cake-candles text-pink-500 bg-pink-50 p-2 rounded-full"></i> 6 ก.ย. 2532 (36 ปี)</p>
+                        <p class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-red-500 bg-red-50 p-2 rounded-full"></i> อุบลราชธานี</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 mt-6 lg:mt-0 relative z-10 w-full lg:w-auto justify-center">
+                <div class="text-center px-8 py-5 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shadow-glass">
+                    <p class="text-sm text-indigo-500 font-semibold mb-1 uppercase tracking-wider">Experience</p>
+                    <p class="text-3xl font-black text-indigo-950 font-heading">8+ <span class="text-lg text-indigo-700 font-medium">ปี</span></p>
+                </div>
+                <div class="text-center px-8 py-5 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shadow-glass">
+                    <p class="text-sm text-emerald-500 font-semibold mb-1 uppercase tracking-wider">Organizations</p>
+                    <p class="text-3xl font-black text-emerald-950 font-heading">7 <span class="text-lg text-emerald-700 font-medium">แห่ง</span></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Skills & Certifications Section -->
+        <div class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl md:text-3xl font-bold text-dark mb-8 flex items-center font-heading">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white mr-4 shadow-lg shadow-indigo-200">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                ทักษะและการรับรอง (Skills & Certifications)
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- MU-ELT Card -->
+                <div class="bg-white/80 p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-100 to-transparent rounded-bl-full opacity-50 z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <h3 class="text-2xl font-bold text-indigo-950 flex items-center gap-3 font-heading">
+                                    <i class="fa-solid fa-language text-indigo-500 bg-indigo-50 p-2 rounded-lg"></i> MU-ELT
+                                </h3>
+                                <p class="text-sm text-slate-500 mt-2 font-medium">ทดสอบเมื่อ: 30 พฤศจิกายน 2567</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-baseline justify-end">
+                                    <span class="text-5xl font-black gradient-text font-heading">64</span>
+                                    <span class="text-lg text-slate-400 font-medium ml-1">/ 150</span>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="text-sm font-bold text-emerald-700 bg-emerald-100/80 px-4 py-1.5 rounded-full inline-block shadow-sm">Fair User</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="font-semibold text-slate-700">Listening (ทักษะการฟัง)</span>
+                                    <span class="text-indigo-600 font-bold">31</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-3 shadow-inner overflow-hidden">
+                                    <div class="bg-gradient-to-r from-indigo-400 to-indigo-600 h-full rounded-full relative" style="width: 31%">
+                                        <div class="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="font-semibold text-slate-700">Reading (ทักษะการอ่าน)</span>
+                                    <span class="text-purple-600 font-bold">33</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-3 shadow-inner overflow-hidden">
+                                    <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-full rounded-full relative" style="width: 33%">
+                                        <div class="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite] delay-75"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-5 bg-slate-50 rounded-xl border border-slate-100">
+                            <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> คำอธิบายระดับทักษะ:</h4>
+                            <ul class="text-sm text-slate-600 list-none space-y-2.5">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1 flex-shrink-0"></i> สามารถเข้าใจใจความสำคัญของเรื่องราวได้</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1 flex-shrink-0"></i> สามารถฟังบทสนทนาสั้นๆ ง่ายๆ ในหัวข้อที่คุ้นเคยได้</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1 flex-shrink-0"></i> สามารถอ่านข้อความได้ในระดับหนึ่งด้วยคลังคำศัพท์ระดับปานกลาง</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Education Detail Card -->
+                <div class="bg-white/80 p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-center">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-50 to-transparent rounded-bl-full opacity-50 z-0"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold text-dark mb-8 flex items-center font-heading">
+                            <i class="fa-solid fa-user-graduate text-orange-500 bg-orange-50 p-2 rounded-lg mr-3"></i> ประวัติการศึกษา
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white flex-shrink-0 shadow-md">
+                                    <i class="fa-solid fa-building-columns text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 text-xl font-heading">มหาวิทยาลัยขอนแก่น</p>
+                                    <p class="text-sm font-medium text-slate-500 mt-1">สำเร็จการศึกษาปี พ.ศ. 2556</p>
+                                </div>
+                            </div>
+                            
+                            <div class="ml-[1.5rem] border-l-2 border-slate-100 pl-8 space-y-6">
+                                <div class="relative">
+                                    <div class="absolute -left-[37px] top-1.5 w-3 h-3 rounded-full bg-slate-300 border-2 border-white"></div>
+                                    <p class="text-slate-800 text-lg font-semibold">ศิลปศาสตรบัณฑิต</p>
+                                    <div class="mt-2 space-y-1.5">
+                                        <p class="text-slate-600"><span class="font-semibold text-slate-500 inline-block w-20">วิชาเอก:</span> ภาษาสเปน</p>
+                                        <p class="text-slate-600"><span class="font-semibold text-slate-500 inline-block w-20">วิชาโท:</span> <mark>การประชาสัมพันธ์</mark></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative">
+                                    <div class="absolute -left-[37px] top-1.5 w-3 h-3 rounded-full bg-slate-300 border-2 border-white"></div>
+                                    <p class="text-slate-800 font-semibold mb-2">ผลการเรียนและกิจกรรม</p>
+                                    <div class="flex flex-wrap gap-4">
+                                        <div class="bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
+                                            <p class="text-xs text-slate-500 uppercase font-semibold">GPA</p>
+                                            <p class="text-lg font-bold text-slate-800">2.57</p>
+                                        </div>
+                                        <div class="bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
+                                            <p class="text-xs text-slate-500 uppercase font-semibold">กิจกรรมสะสม</p>
+                                            <p class="text-lg font-bold text-slate-800">116.63 <span class="text-sm font-normal">หน่วยกิต</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Skills Chart -->
+            <div class="glass-card rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-dark flex items-center font-heading">
+                        <i class="fa-solid fa-star text-indigo-500 bg-indigo-50 p-2 rounded-lg mr-3"></i> 
+                        ความเชี่ยวชาญและทักษะเด่น (Core Expertise)
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="skillChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Role Chart -->
+            <div class="glass-card rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-dark flex items-center font-heading">
+                        <i class="fa-solid fa-chart-pie text-purple-500 bg-purple-50 p-2 rounded-lg mr-3"></i> 
+                        สัดส่วนตำแหน่งงาน
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="roleChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="glass-card rounded-3xl p-8 md:p-10 mb-10">
+            <h2 class="text-2xl md:text-3xl font-bold text-dark mb-10 flex items-center font-heading">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-400 to-teal-500 flex items-center justify-center text-white mr-4 shadow-lg shadow-emerald-200">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                ประวัติการทำงาน (Timeline)
+            </h2>
+            
+            <div class="pl-4 md:pl-8 border-l-2 border-indigo-100/70 space-y-14 relative mt-4">
+                
+                <!-- Job 0 (Newest) -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-100 to-teal-50 text-emerald-800 rounded-full text-sm font-bold mb-4 border border-emerald-200 shadow-sm">พฤษภาคม 2569 - ปัจจุบัน</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">เจ้าหน้าที่บริหารงานทั่วไป</h3>
+                    <p class="text-lg text-emerald-600 font-semibold mb-4 mt-1">คณะกายภาพบำบัด มหาวิทยาลัยมหิดล</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <div class="mb-5">
+                            <span class="inline-flex items-center bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-200">
+                                <i class="fa-solid fa-trophy mr-1.5 text-emerald-500"></i> ผลงานเด่นที่สำเร็จแล้ว (Completed Achievements)
+                            </span>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <div class="mt-0.5 bg-blue-50 p-2 rounded-lg text-blue-500 flex-shrink-0 border border-blue-100"><i class="fa-solid fa-laptop-code"></i></div>
+                                <div><strong class="text-slate-800">การพัฒนาระบบดิจิทัล (Digital Portfolio):</strong> พัฒนา Interactive Survey Dashboard และระบบประเมินผลออนไลน์ (ความพึงพอใจงาน PTMU Quality Day สูงถึง 97.06%) รวมถึงสร้างระบบแจ้งเตือนอัตโนมัติ (Automated Notification) ด้วย Google Apps Script</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="mt-0.5 bg-purple-50 p-2 rounded-lg text-purple-500 flex-shrink-0 border border-purple-100"><i class="fa-solid fa-users-viewfinder"></i></div>
+                                <div><strong class="text-slate-800">การบริหารจัดการกิจกรรมและการประชุม:</strong> ดำเนินการจัดงานสำคัญสำเร็จลุล่วง เช่น งานวันสถาปนาคณะ, สัมมนาผู้บริหาร 2569, และการประชุมอาจารย์ (จัดการระบบ Webex, ร่างรายงาน และนำเสนอผู้บริหาร)</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="mt-0.5 bg-orange-50 p-2 rounded-lg text-orange-500 flex-shrink-0 border border-orange-100"><i class="fa-solid fa-graduation-cap"></i></div>
+                                <div><strong class="text-slate-800">การพัฒนาศักยภาพ (Upskilling):</strong> ผ่านการอบรมและได้รับประกาศนียบัตรถึง 15 หลักสูตร ครอบคลุมทั้งด้านเทคโนโลยี (AI, Workflow Automation) และด้านกฎหมาย/การปฏิบัติราชการ</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 1 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">กุมภาพันธ์ 2568 - สิงหาคม 2568 (6 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">เจ้าหน้าที่บริหารงานทั่วไป</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">คณะวิศวกรรมศาสตร์ กลุ่มสาขาวิชาโลจิสติกส์และระบบขนส่งทางราง มหาวิทยาลัยมหิดล</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">การบริหารจัดการทั่วไป:</strong> ดูแลงานธุรการ งบประมาณ การเงิน พัสดุ ทรัพยากรบุคคล และอาคารสถานที่ เพื่อสนับสนุนการดำเนินงานของหลักสูตรระดับบัณฑิตศึกษา</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">งานเลขานุการและประสานงานระดับสากล:</strong> ร่างและแปลเอกสาร จัดเตรียมการประชุมอย่างครบวงจร พร้อม<mark>ประสานงาน</mark>ความร่วมมือกับหน่วยงานทั้งในประเทศและต่างประเทศ</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">การสนับสนุนวิชาการและนักศึกษา:</strong> ให้คำปรึกษา แนะนำ และแก้ไขปัญหาแก่นักศึกษาระดับบัณฑิตศึกษา รวมถึงให้บริการข้อมูลสารสนเทศแก่บุคลากรและผู้รับบริการ</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">การวิเคราะห์และวางแผน:</strong> รวบรวมสถิติ และจัดทำรายงานสรุปผล เพื่อร่วมวางแผนการดำเนินงานและสนับสนุนการกำหนดนโยบายของหลักสูตร</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 2 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">เมษายน 2565 - มกราคม 2567 (1 ปี 10 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">เจ้าหน้าที่บริหารงานทั่วไป</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">สำนักงานพัฒนาวิทยาศาสตร์และเทคโนโลยีแห่งชาติ (สวทช.)</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800"><mark>งานประชาสัมพันธ์</mark>ภายนอก:</strong> ดูแล TLO web, จัดเตรียมข้อมูลเพื่อเผยแพร่, <mark>ประสานงาน</mark> Outsource เพื่อแก้ปัญหาและอัปเดตเว็บไซต์</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800"><mark>งานประชาสัมพันธ์</mark>ภายใน:</strong> ดูแล TLO intranet, ระบบแจ้งข่าว, IP Awareness และการสื่อสารข้อมูลภายในองค์กร</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">ดูแลโครงการ:</strong> โครงการ APEC ส่งเสริมนักวิจัยรุ่นใหม่, โครงการส่งเสริมศักยภาพบุคลากรทรัพย์สินทางปัญญา จัดการงบประมาณ การเงิน พัสดุ</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div><strong class="text-slate-800">สนับสนุนกิจกรรม:</strong> งาน Partnership, ระบบ mySales, และดูแลระบบบริหารคุณภาพ (ISO) ของฝ่าย TLO</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 3 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">ตุลาคม 2559 - มีนาคม 2565 (5 ปี 5 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">เจ้าหน้าที่บริหารงานทั่วไป</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">ศูนย์เทคโนโลยีโลหะและวัสดุแห่งชาติ (MTEC)</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> จัดทำสัญญาโครงการ VCE 2564 และเบิกจ่ายเงินผ่านระบบ Pabi รวม 15 โครงการ</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> ดูแลเอกสารโครงการ VCE63-VCE64 ผ่านระบบ Infoma, บันทึกเบิกจ่าย, จัดเตรียมการประชุม</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> จัดทำเอกสารเบิกจ่าย EX ค่าตอบแทนบุคลากรในโครงการประจำปี 2563-2564</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> นัดหมายเชิญประชุมคณะกรรมการ และจัดการจองรถ/เครื่องบิน/โรงแรม สำหรับตรวจงานและศึกษาดูงาน</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> ดำเนินการจัดซื้อจัดจ้างอุปกรณ์เร่งด่วนตามระเบียบพัสดุ</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 4 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">กรกฎาคม 2559 - กันยายน 2559 (2 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">เจ้าหน้าที่บริหารงานทั่วไป (ลูกจ้างชั่วคราว)</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> ดูแลนักศึกษาโครงการปริญญาตรีภาคพิเศษ หลักสูตรนานาชาติ (ISC)</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> ประสานงานจัดตารางสอนและห้องเรียนลงระบบ VDI</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> จัดทำร่างทุนการศึกษา และหนังสือเชิญอาจารย์จากภายนอก</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 5 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">เมษายน 2559 - มิถุนายน 2559 (2 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">นักวิเทศสัมพันธ์ พนักงานเงินรายได้ (ชั่วคราว)</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">คณะศิลปศาสตร์ มหาวิทยาลัยธรรมศาสตร์ ท่าพระจันทร์</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> ร่างโต้ตอบหนังสือราชการ และจัดทำสถิติ MOU/นักศึกษาต่างชาติ</li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-caret-right text-indigo-400 mt-1"></i> จัดเตรียมการประชุมกับมหาวิทยาลัยต่างประเทศ และ<mark>การประสานงานต่างประเทศ</mark> ต้อนรับแขกสำคัญ (VIP)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job 6 -->
+                <div class="timeline-item relative group">
+                    <span class="inline-block px-4 py-1.5 bg-white text-slate-600 rounded-full text-sm font-semibold mb-4 border border-slate-200 shadow-sm">กรกฎาคม 2558 - มีนาคม 2559 (8 เดือน)</span>
+                    <h3 class="text-2xl font-bold text-slate-900 font-heading">นักวิเทศสัมพันธ์ (ลูกจ้างชั่วคราว)</h3>
+                    <p class="text-lg text-indigo-600 font-semibold mb-4 mt-1">สำนักงานคณะกรรมการวิจัยแห่งชาติ (วช.)</p>
+                    <div class="bg-white p-6 rounded-2xl text-slate-600 text-sm leading-relaxed border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div>ดูแลและ<mark>ประสานงานชาวต่างประเทศ</mark> (นักประดิษฐ์ชาวต่างชาติจาก 25 ประเทศ) ในงาน "วันนักประดิษฐ์" ปี 2559 (IPITEX 2016)</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div>ดูแลรับผิดชอบเนื้อหาข่าวภาษาอังกฤษ และแปลข่าว "จดหมายข่าว วช." <mark>งานประชาสัมพันธ์</mark></div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div>จัดทำ Presentation เสนอต่อเลขาธิการ วช.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-indigo-400 mt-1"></i>
+                                <div>ทำหน้าที่พิธีกรภาคภาษาอังกฤษในงานสัมมนาระดับนานาชาติต่างๆ</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts for Charts -->
+    <script>
+        // Setup Chart defaults for a more premium look
+        Chart.defaults.font.family = "'Prompt', sans-serif";
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.scale.grid.color = 'rgba(226, 232, 240, 0.6)';
+        Chart.defaults.scale.grid.borderColor = 'transparent';
+
+        // Custom Plugin for Drop Shadow in Charts
+        const dropShadowPlugin = {
+            id: 'dropShadow',
+            beforeDraw: (chart, args, options) => {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.shadowColor = options.color || 'rgba(0,0,0,0.1)';
+                ctx.shadowBlur = options.blur || 10;
+                ctx.shadowOffsetX = options.offsetX || 0;
+                ctx.shadowOffsetY = options.offsetY || 5;
+            },
+            afterDraw: (chart) => {
+                chart.ctx.restore();
+            }
+        };
+        Chart.register(dropShadowPlugin);
+
+        // Data 
+        const skillLabels = ['การบริหารจัดการ', 'ประสานงานโครงการ', 'วิเทศสัมพันธ์', 'พัฒนาระบบ (IT)', 'จัดการประชุม'];
+        const skillScores = [95, 92, 88, 85, 90]; 
+        
+        const roleLabels = ['เจ้าหน้าที่บริหารงานทั่วไป', 'นักวิเทศสัมพันธ์'];
+        const roleCount = [5, 2];
+
+        // Gradient generator helper
+        function createGradient(ctx, colorStart, colorEnd) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, colorStart);
+            gradient.addColorStop(1, colorEnd);
+            return gradient;
+        }
+
+        // Bar Chart (Core Skills)
+        const ctxSkill = document.getElementById('skillChart').getContext('2d');
+        const gradientEmerald = createGradient(ctxSkill, '#34d399', '#059669');
+        const gradientSky = createGradient(ctxSkill, '#38bdf8', '#0284c7');
+        const gradientIndigo = createGradient(ctxSkill, '#818cf8', '#4f46e5');
+        const gradientAmber = createGradient(ctxSkill, '#fbbf24', '#d97706');
+        const gradientPink = createGradient(ctxSkill, '#f472b6', '#db2777');
+        
+        const barColors = [gradientEmerald, gradientSky, gradientIndigo, gradientAmber, gradientPink];
+        new Chart(ctxSkill, {
+            type: 'bar',
+            data: {
+                labels: skillLabels,
+                datasets: [{
+                    label: 'ระดับความเชี่ยวชาญ (%)',
+                    data: skillScores,
+                    backgroundColor: barColors,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: 'Prompt', size: 14, weight: 'bold' },
+                        bodyFont: { family: 'Prompt', size: 14 },
+                        padding: 15,
+                        cornerRadius: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `ระดับความเชี่ยวชาญ: ${context.parsed.y}%`;
+                            }
+                        }
+                    },
+                    dropShadow: {
+                        color: 'rgba(99, 102, 241, 0.2)',
+                        blur: 12,
+                        offsetX: 0,
+                        offsetY: 6
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { 
+                            drawBorder: false,
+                            tickLength: 0
+                        },
+                        ticks: { 
+                            padding: 10,
+                            font: { family: 'Outfit', size: 12 },
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { 
+                            padding: 10,
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: { size: 11, family: 'Prompt' }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // Role Doughnut Chart
+        const ctxRole = document.getElementById('roleChart').getContext('2d');
+        
+        const doughnutGradient1 = createGradient(ctxRole, '#818cf8', '#4338ca');
+        const doughnutGradient2 = createGradient(ctxRole, '#38bdf8', '#0284c7');
+
+        new Chart(ctxRole, {
+            type: 'doughnut',
+            data: {
+                labels: roleLabels,
+                datasets: [{
+                    data: roleCount,
+                    backgroundColor: [doughnutGradient1, doughnutGradient2],
+                    borderWidth: 4,
+                    borderColor: '#ffffff',
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                layout: {
+                    padding: 20
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Prompt', size: 14 },
+                            padding: 25,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: 'Prompt', size: 14 },
+                        bodyFont: { family: 'Prompt', size: 14, weight: 'bold' },
+                        padding: 15,
+                        cornerRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.parsed} ตำแหน่ง`;
+                            }
+                        }
+                    },
+                    dropShadow: {
+                        color: 'rgba(0,0,0,0.1)',
+                        blur: 15,
+                        offsetX: 0,
+                        offsetY: 8
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    </script>
+    <style>
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</body>
+</html>
